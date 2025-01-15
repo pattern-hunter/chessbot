@@ -1,1 +1,1 @@
-# mychessbot
+# chessbot
