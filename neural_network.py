@@ -5,12 +5,8 @@ import csv
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 import numpy as np
 from sklearn.model_selection import GridSearchCV
-
-def conv_ascii(s):
-	result = ""
-	for c in s:
-		result += str(ord(c))
-	return result
+from sklearn.ensemble import RandomForestClassifier
+import helpers
 
 hyperparameter_space = {
     'hidden_layer_sizes': [(10,30,10),(20,)],
@@ -25,7 +21,7 @@ with open("dataset.csv", "r") as datafile:
 	csvlines = list(csv.DictReader(datafile))
 
 	for line in csvlines:
-		X.append([conv_ascii(line["opponent"])])
+		X.append([helpers.conv_ascii(line["opponent"])])
 		y.append(line["index"])
 
 	X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1, random_state=42)
@@ -39,19 +35,25 @@ with open("dataset.csv", "r") as datafile:
 	# clf.fit(X_train, y_train) # X is train samples and y is the corresponding labels
 	# print('Best parameters found:\n', clf.best_params_)
 
-	mlp = MLPClassifier(
-		activation='tanh',
-		alpha=0.0001,
-		learning_rate='constant',
-		hidden_layer_sizes=(10, 30, 10),
-		max_iter=1000,
-		solver='sgd'
-	)
-	mlp.fit(X_train, y_train)
-	y_pred = mlp.predict(X_test)
-	print(f"Accuracy: ", accuracy_score(y_test, y_pred))
+	# mlp = MLPClassifier(
+	# 	activation='tanh',
+	# 	alpha=0.0001,
+	# 	learning_rate='constant',
+	# 	hidden_layer_sizes=(10, 30, 10),
+	# 	max_iter=1000,
+	# 	solver='sgd'
+	# )
+	# mlp.fit(X_train, y_train)
+	# y_pred = mlp.predict(X_test)
+	# print(f"Accuracy: ", accuracy_score(y_test, y_pred))
 
-	classesinit = False
+	rf = RandomForestClassifier()
+	rf.fit(X_train, y_train)
+	y_pred = rf.predict(X_test)
+	accuracy = accuracy_score(y_test, y_pred)
+	print("Accuracy:", accuracy)
+
+	# classesinit = False
 
 	# for i in range(100):
 	# 	np.random.shuffle(csvlines)
