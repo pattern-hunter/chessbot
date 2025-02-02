@@ -1,4 +1,5 @@
 from temporalio import workflow, activity
+from workflows.params import lichess_params
 from datetime import timedelta
 from dataclasses import dataclass
 from temporalio.client import Client
@@ -8,7 +9,6 @@ from datetime import datetime
 
 with workflow.unsafe.imports_passed_through():
     from workflows.activities import lichess_activity
-    from workflows.params import lichess_params
 
 @workflow.defn(name="ContinuousLearningWorkflow")
 class ContinuousLearningWorkflow:
