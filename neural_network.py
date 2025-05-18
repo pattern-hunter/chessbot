@@ -8,13 +8,21 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.ensemble import RandomForestClassifier
 import helpers
 
+layers = []
+for i in range(10, 101):
+	for j in range(10, 101):
+		for k in range(10, 101):
+			layers.append((i, j, k))
+
 hyperparameter_space = {
-    'hidden_layer_sizes': [(10,30,10),(20,)],
+    'hidden_layer_sizes': layers,
     'activation': ['tanh', 'relu'],
     'solver': ['sgd', 'adam'],
-    'alpha': [0.0001, 0.05],
+    'alpha': [0.0001, 0.0005, 0.001, 0.005, 0.01, 0.05, 0.1, 0.5],
     'learning_rate': ['constant','adaptive'],
 }
+
+classesinit = False
 
 with open("dataset.csv", "r") as datafile:
 	X, y = [], []
@@ -24,16 +32,20 @@ with open("dataset.csv", "r") as datafile:
 		X.append([helpers.conv_ascii(line["opponent"])])
 		y.append(line["index"])
 
+	if not classesinit:
+		classes = np.unique(y)
+		classesinit = True
+
 	X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1, random_state=42)
 	scaler = StandardScaler()
 	X_train = scaler.fit_transform(X_train)
 	X_test = scaler.transform(X_test)
 
 	# Initialize the MLPClassifier
-	# mlp = MLPClassifier(hidden_layer_sizes=(100,), max_iter=1000, random_state=42, solver='adam')
-	# clf = GridSearchCV(mlp, hyperparameter_space, n_jobs=-1, cv=5)
-	# clf.fit(X_train, y_train) # X is train samples and y is the corresponding labels
-	# print('Best parameters found:\n', clf.best_params_)
+	mlp = MLPClassifier(hidden_layer_sizes=(100,), max_iter=10000, random_state=42, solver='adam')
+	clf = GridSearchCV(mlp, hyperparameter_space, n_jobs=-1, cv=5)
+	clf.fit(X_train, y_train) # X is train samples and y is the corresponding labels
+	print('Best parameters found:\n', clf.best_params_)
 
 	# mlp = MLPClassifier(
 	# 	activation='tanh',
@@ -43,15 +55,11 @@ with open("dataset.csv", "r") as datafile:
 	# 	max_iter=1000,
 	# 	solver='sgd'
 	# )
-	# mlp.fit(X_train, y_train)
+
+
+	# mlp.partial_fit(X_train, y_train, classes)
 	# y_pred = mlp.predict(X_test)
 	# print(f"Accuracy: ", accuracy_score(y_test, y_pred))
-
-	rf = RandomForestClassifier()
-	rf.fit(X_train, y_train)
-	y_pred = rf.predict(X_test)
-	accuracy = accuracy_score(y_test, y_pred)
-	print("Accuracy:", accuracy)
 
 	# classesinit = False
 
