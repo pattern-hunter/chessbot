@@ -1,0 +1,189 @@
+# PIPELINE DEFINITION
+# Name: chessbot-pipeline
+# Inputs:
+#    msg: str
+# Outputs:
+#    Output: str
+components:
+  comp-parse-game-data:
+    executorLabel: exec-parse-game-data
+    outputDefinitions:
+      parameters:
+        Output:
+          parameterType: STRING
+  comp-predict-my-move:
+    executorLabel: exec-predict-my-move
+    inputDefinitions:
+      parameters:
+        modelname:
+          parameterType: STRING
+        moves:
+          parameterType: LIST
+    outputDefinitions:
+      parameters:
+        Output:
+          parameterType: STRING
+  comp-train-model:
+    executorLabel: exec-train-model
+    inputDefinitions:
+      parameters:
+        filename:
+          parameterType: STRING
+    outputDefinitions:
+      parameters:
+        Output:
+          parameterType: STRING
+deploymentSpec:
+  executors:
+    exec-parse-game-data:
+      container:
+        args:
+        - --executor_input
+        - '{{$}}'
+        - --function_to_execute
+        - parse_game_data
+        command:
+        - sh
+        - -c
+        - "\nif ! [ -x \"$(command -v pip)\" ]; then\n    python3 -m ensurepip ||\
+          \ python3 -m ensurepip --user || apt-get install python3-pip\nfi\n\nPIP_DISABLE_PIP_VERSION_CHECK=1\
+          \ python3 -m pip install --quiet --no-warn-script-location 'kfp==2.13.0'\
+          \ '--no-deps' 'typing-extensions>=3.7.4,<5; python_version<\"3.9\"' && \"\
+          $0\" \"$@\"\n"
+        - sh
+        - -ec
+        - 'program_path=$(mktemp -d)
+
+
+          printf "%s" "$0" > "$program_path/ephemeral_component.py"
+
+          _KFP_RUNTIME=true python3 -m kfp.dsl.executor_main                         --component_module_path                         "$program_path/ephemeral_component.py"                         "$@"
+
+          '
+        - "\nimport kfp\nfrom kfp import dsl\nfrom kfp.dsl import *\nfrom typing import\
+          \ *\n\ndef parse_game_data() -> str:\n\tparse_data()\n\n"
+        image: python3.13.1
+    exec-predict-my-move:
+      container:
+        args:
+        - --executor_input
+        - '{{$}}'
+        - --function_to_execute
+        - predict_my_move
+        command:
+        - sh
+        - -c
+        - "\nif ! [ -x \"$(command -v pip)\" ]; then\n    python3 -m ensurepip ||\
+          \ python3 -m ensurepip --user || apt-get install python3-pip\nfi\n\nPIP_DISABLE_PIP_VERSION_CHECK=1\
+          \ python3 -m pip install --quiet --no-warn-script-location 'kfp==2.13.0'\
+          \ '--no-deps' 'typing-extensions>=3.7.4,<5; python_version<\"3.9\"'  &&\
+          \  python3 -m pip install --quiet --no-warn-script-location 'sklearn' &&\
+          \ \"$0\" \"$@\"\n"
+        - sh
+        - -ec
+        - 'program_path=$(mktemp -d)
+
+
+          printf "%s" "$0" > "$program_path/ephemeral_component.py"
+
+          _KFP_RUNTIME=true python3 -m kfp.dsl.executor_main                         --component_module_path                         "$program_path/ephemeral_component.py"                         "$@"
+
+          '
+        - "\nimport kfp\nfrom kfp import dsl\nfrom kfp.dsl import *\nfrom typing import\
+          \ *\n\ndef predict_my_move(modelname: str, moves: list) -> str:\n\treturn\
+          \ \", \".join(predict(moves))\n\n"
+        image: python3.13.1
+    exec-train-model:
+      container:
+        args:
+        - --executor_input
+        - '{{$}}'
+        - --function_to_execute
+        - train_model
+        command:
+        - sh
+        - -c
+        - "\nif ! [ -x \"$(command -v pip)\" ]; then\n    python3 -m ensurepip ||\
+          \ python3 -m ensurepip --user || apt-get install python3-pip\nfi\n\nPIP_DISABLE_PIP_VERSION_CHECK=1\
+          \ python3 -m pip install --quiet --no-warn-script-location 'kfp==2.13.0'\
+          \ '--no-deps' 'typing-extensions>=3.7.4,<5; python_version<\"3.9\"'  &&\
+          \  python3 -m pip install --quiet --no-warn-script-location 'sklearn' &&\
+          \ \"$0\" \"$@\"\n"
+        - sh
+        - -ec
+        - 'program_path=$(mktemp -d)
+
+
+          printf "%s" "$0" > "$program_path/ephemeral_component.py"
+
+          _KFP_RUNTIME=true python3 -m kfp.dsl.executor_main                         --component_module_path                         "$program_path/ephemeral_component.py"                         "$@"
+
+          '
+        - "\nimport kfp\nfrom kfp import dsl\nfrom kfp.dsl import *\nfrom typing import\
+          \ *\n\ndef train_model(filename: str) -> str:\n\treturn train_random_forest(filename)\n\
+          \n"
+        image: python3.13.1
+pipelineInfo:
+  name: chessbot-pipeline
+root:
+  dag:
+    outputs:
+      parameters:
+        Output:
+          valueFromParameter:
+            outputParameterKey: Output
+            producerSubtask: predict-my-move
+    tasks:
+      parse-game-data:
+        cachingOptions:
+          enableCache: true
+        componentRef:
+          name: comp-parse-game-data
+        taskInfo:
+          name: parse-game-data
+      predict-my-move:
+        cachingOptions:
+          enableCache: true
+        componentRef:
+          name: comp-predict-my-move
+        dependentTasks:
+        - train-model
+        inputs:
+          parameters:
+            modelname:
+              taskOutputParameter:
+                outputParameterKey: Output
+                producerTask: train-model
+            moves:
+              runtimeValue:
+                constant:
+                - 1.0
+                - 634.0
+                - 56474.0
+        taskInfo:
+          name: predict-my-move
+      train-model:
+        cachingOptions:
+          enableCache: true
+        componentRef:
+          name: comp-train-model
+        dependentTasks:
+        - parse-game-data
+        inputs:
+          parameters:
+            filename:
+              taskOutputParameter:
+                outputParameterKey: Output
+                producerTask: parse-game-data
+        taskInfo:
+          name: train-model
+  inputDefinitions:
+    parameters:
+      msg:
+        parameterType: STRING
+  outputDefinitions:
+    parameters:
+      Output:
+        parameterType: STRING
+schemaVersion: 2.1.0
+sdkVersion: kfp-2.13.0
