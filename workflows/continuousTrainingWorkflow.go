@@ -5,6 +5,7 @@ import (
 
 	"github.com/pattern-hunter/chessbot/workflows/activities"
 	"github.com/pattern-hunter/chessbot/workflows/params"
+	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/workflow"
 )
 
@@ -13,7 +14,10 @@ import (
 // ContinuousTrainingWorkflow periodically trains the chessbot
 func ContinuousTrainingWorkflow(ctx workflow.Context, lichessParams params.LichessParams) error {
 	activityOptions := workflow.ActivityOptions{
-		StartToCloseTimeout: 30 * time.Second,
+		StartToCloseTimeout: 60 * time.Second,
+		RetryPolicy: &temporal.RetryPolicy{
+			MaximumAttempts: 3,
+		},
 	}
 	ctx = workflow.WithActivityOptions(ctx, activityOptions)
 
@@ -40,5 +44,11 @@ func ContinuousTrainingWorkflow(ctx workflow.Context, lichessParams params.Liche
 		return err
 	}
 
+	var pdao *activities.ParseDataActivityObject
+	var parseDataActivityResult string
+	err = workflow.ExecuteActivity(ctx, pdao.ParseGameDataActivity, params.ParseDataParams{Filename: "games_from_workflow.txt"}).Get(ctx, &parseDataActivityResult)
+	if err != nil {
+		return err
+	}
 	return nil
 }

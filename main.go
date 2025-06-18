@@ -20,14 +20,17 @@ func main() {
 	lichessActivityObject := activities.LichessActivityObject{
 		Timestamp: 1,
 	}
-
 	chessBotWorker.RegisterActivity(lichessActivityObject.GetUserGamesFromLichessActivity)
 
 	fileWriteActivityObject := activities.FileWriteActivityObject{
 		Timestamp: 1,
 	}
-
 	chessBotWorker.RegisterActivity(fileWriteActivityObject.WriteStringToFileActivity)
+
+	parseDataActivityObject := activities.ParseDataActivityObject{
+		Timestamp: 1,
+	}
+	chessBotWorker.RegisterActivity(parseDataActivityObject.ParseGameDataActivity)
 
 	// Run the Worker
 	err = chessBotWorker.Run(worker.InterruptCh())
