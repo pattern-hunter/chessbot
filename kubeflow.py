@@ -5,13 +5,13 @@ from predict import predict
 
 
 @dsl.component(
-	base_image="python3.13.1"
+	base_image="python3.13.3-bookworm"
 )
 def parse_game_data() -> str:
-	parse_data()
+	return parse_data()
 
 @dsl.component(
-	base_image="python3.13.1",
+	base_image="python3.13.3-bookworm",
 	packages_to_install = ['sklearn']
 )
 def train_model(filename: str) -> str:
@@ -19,7 +19,7 @@ def train_model(filename: str) -> str:
 
 
 @dsl.component(
-	base_image="python3.13.1",
+	base_image="python3.13.3-bookworm",
 	packages_to_install = ['sklearn']
 )
 def predict_my_move(modelname: str, moves: list) -> str:

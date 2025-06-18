@@ -8,3 +8,7 @@ type LichessParams struct {
 type FileWriteParams struct {
 	Contents string
 }
+
+type ParseDataParams struct {
+	Filename string
+}

@@ -2,6 +2,15 @@
 
 ## Running workflow from terminal
 ```
+temporal server start-dev 
+```
+
+```
+go run main.go
+```
+
+
+```
 temporal workflow start \
    --task-queue lichess-queue \
    --type ContinuousTrainingWorkflow \

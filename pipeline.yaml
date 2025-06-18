@@ -61,8 +61,8 @@ deploymentSpec:
 
           '
         - "\nimport kfp\nfrom kfp import dsl\nfrom kfp.dsl import *\nfrom typing import\
-          \ *\n\ndef parse_game_data() -> str:\n\tparse_data()\n\n"
-        image: python3.13.1
+          \ *\n\ndef parse_game_data() -> str:\n\treturn parse_data()\n\n"
+        image: python3.13.3-bookworm
     exec-predict-my-move:
       container:
         args:
@@ -92,7 +92,7 @@ deploymentSpec:
         - "\nimport kfp\nfrom kfp import dsl\nfrom kfp.dsl import *\nfrom typing import\
           \ *\n\ndef predict_my_move(modelname: str, moves: list) -> str:\n\treturn\
           \ \", \".join(predict(moves))\n\n"
-        image: python3.13.1
+        image: python3.13.3-bookworm
     exec-train-model:
       container:
         args:
@@ -122,7 +122,7 @@ deploymentSpec:
         - "\nimport kfp\nfrom kfp import dsl\nfrom kfp.dsl import *\nfrom typing import\
           \ *\n\ndef train_model(filename: str) -> str:\n\treturn train_random_forest(filename)\n\
           \n"
-        image: python3.13.1
+        image: python3.13.3-bookworm
 pipelineInfo:
   name: chessbot-pipeline
 root:

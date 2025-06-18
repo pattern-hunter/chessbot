@@ -39,8 +39,8 @@ def index(arr, elem):
             break
     return str(i)
 
-def parse_data():
-    with open("games_first.txt", "r") as games_file:
+def parse_data(filename):
+    with open(filename, "r") as games_file:
         payload = games_file.read().split("\n\n")
         dataset = []
         for i in range(0, len(payload)-1, 2):
@@ -101,4 +101,5 @@ def parse_data():
         for row in uci_dataset:
             data_file.write(",".join(row)+"\n")
 
-    return "dataset.csv"
+    # Needed for kubeflow
+    # return "dataset.csv"
