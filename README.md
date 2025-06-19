@@ -2,6 +2,10 @@
 
 ## Running python workflor from terminal
 ```
+temporal server start-dev
+```
+
+```
 python run_worker.py
 ```
 
