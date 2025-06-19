@@ -1,6 +1,16 @@
 # chessbot
 
-## Running workflow from terminal
+## Running python workflor from terminal
+```
+python run_worker.py
+```
+
+```
+python run_workflow.py
+```
+
+
+## Running go workflow from terminal
 ```
 temporal server start-dev 
 ```
