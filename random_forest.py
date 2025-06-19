@@ -30,6 +30,23 @@ def train_random_forest(filename):
 			pickle.dump(rf, pklfile)
 	return "model.pkl"
 	
+def show_model_accuracy(data_file, model_file):
+	with open(model_file, "rb") as pklfile:
+		model = pickle.load(pklfile)
+
+	with open(data_file, "r") as datafile:
+		X, y = [], []
+		csvlines = list(csv.DictReader(datafile))
+
+		for line in csvlines:
+			X.append([helpers.conv_ascii(line["opponent"])])
+			y.append(line["mine"])
+
+		X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1, random_state=42)
+		y_pred = model.predict(X_test)
+		accuracy = accuracy_score(y_test, y_pred)
+		return accuracy
+	
 
 	# param_dist = {'n_estimators': list(range(1, 101)), 'max_depth': list(range(1, 21))}
 	# # print(f"Params distribution: {param_dist}")

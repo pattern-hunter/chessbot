@@ -66,7 +66,10 @@ def parse_data(filename):
             else:
                 for i in range(1, movescount, 1):
                     moverep = movelist[i].split(" ")
-                    dataset.append([moverep[1], moverep[2]])
+                    try:
+                        dataset.append([moverep[1], moverep[2]])
+                    except IndexError as e:
+                        continue
                 if len(dataset[-1]) == 1 or dataset[-1][0][-1] == "#":
                     dataset = dataset[0:-1]
 
@@ -82,9 +85,12 @@ def parse_data(filename):
         if row[0] == "start":
             uci_row.append("start")
         else:
-            move = board.parse_san(row[0])
-            board.push_san(row[0])
-            uci_row.append(move.uci())
+            try:
+                move = board.parse_san(row[0])
+                board.push_san(row[0])
+                uci_row.append(move.uci())
+            except Exception as e:
+                continue
 
         try:
             move = board.parse_san(row[1])
@@ -93,7 +99,7 @@ def parse_data(filename):
             uci_row.append(move.uci())
             uci_row.append(index(legalmoves, row[1]))
             uci_dataset.append(uci_row)
-        except chess.InvalidMoveError as e:
+        except Exception as e:
             continue
 
     with open("dataset.csv", "w") as data_file:
@@ -102,4 +108,4 @@ def parse_data(filename):
             data_file.write(",".join(row)+"\n")
 
     # Needed for kubeflow
-    # return "dataset.csv"
+    return "dataset.csv"
