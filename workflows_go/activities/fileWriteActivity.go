@@ -4,7 +4,7 @@ import (
 	"context"
 	"os"
 
-	"github.com/pattern-hunter/chessbot/workflows/params"
+	"github.com/pattern-hunter/chessbot/workflows_go/params"
 )
 
 type FileWriteActivityObject struct {

@@ -3,8 +3,8 @@ package workflows
 import (
 	"time"
 
-	"github.com/pattern-hunter/chessbot/workflows/activities"
-	"github.com/pattern-hunter/chessbot/workflows/params"
+	"github.com/pattern-hunter/chessbot/workflows_go/activities"
+	"github.com/pattern-hunter/chessbot/workflows_go/params"
 	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/workflow"
 )

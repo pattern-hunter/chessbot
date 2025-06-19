@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/pattern-hunter/chessbot/workflows"
-	"github.com/pattern-hunter/chessbot/workflows/activities"
+	workflows "github.com/pattern-hunter/chessbot/workflows_go"
+	"github.com/pattern-hunter/chessbot/workflows_go/activities"
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/worker"
 )

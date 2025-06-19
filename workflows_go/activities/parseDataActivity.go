@@ -2,10 +2,9 @@ package activities
 
 import (
 	"context"
-	"fmt"
 	"os/exec"
 
-	"github.com/pattern-hunter/chessbot/workflows/params"
+	"github.com/pattern-hunter/chessbot/workflows_go/params"
 )
 
 type ParseDataActivityObject struct {
@@ -16,6 +15,6 @@ func (pdao *ParseDataActivityObject) ParseGameDataActivity(
 	ctx context.Context,
 	parseDataParams params.ParseDataParams,
 ) error {
-	err := exec.Command(fmt.Sprintf("python main.py parse %v", parseDataParams.Filename)).Run()
+	err := exec.Command("python", "main.py", parseDataParams.Filename).Run()
 	return err
 }

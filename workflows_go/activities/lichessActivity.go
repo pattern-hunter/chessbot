@@ -6,7 +6,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/pattern-hunter/chessbot/workflows/params"
+	"github.com/pattern-hunter/chessbot/workflows_go/params"
 )
 
 type LichessActivityObject struct {
