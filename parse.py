@@ -109,3 +109,5 @@ def parse_data(filename):
 
     # Needed for kubeflow
     return "dataset.csv"
+
+parse_data("games_data.txt")
