@@ -17,7 +17,7 @@ async def main() -> None:
 
     result = await client.execute_workflow(
         HyperparameterTuningWorkflow.run,
-        HyperparameterTuningWorkflowInput(test_size=0.1, random_state=42),
+        HyperparameterTuningWorkflowInput(test_size=0.1, random_state=42, max_estimators=100, max_depth=20),
         id="hyperparameter-tuning-workflow",
         task_queue="ml-queue"
     )

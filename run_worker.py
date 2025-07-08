@@ -15,7 +15,7 @@ from workflows_py.hyperparameter_tuning_workflow import *
 from workflows_py.activities.lichess_activity import *
 from workflows_py.activities.file_io_activities import *
 from workflows_py.activities.ml_activities import *
-from workflows_py.activities.random_forest.generate_data_activity import *
+from workflows_py.activities.random_forest.activities import *
 
 from temporalio.client import Client
 from temporalio.worker import Worker
@@ -45,7 +45,8 @@ async def main():
             parse_game_data_file_activity,
             training_activity,
             testing_activity,
-            generate_train_and_test_data
+            generate_train_and_test_data,
+            fit_model_and_check_accuracy
         ],
     )
     await worker.run()
